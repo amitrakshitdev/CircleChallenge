@@ -6,7 +6,7 @@ import { ThemeProvider } from "theme-ui";
 import { theme } from "./Theme/theme";
 import store from "./Services/store";
 import { Provider } from "react-redux";
-import { jsx } from "theme-ui";
+// import { jsx } from "theme-ui";
 
 const rootDOM = document.getElementById("root");
 const root = createRoot(rootDOM);

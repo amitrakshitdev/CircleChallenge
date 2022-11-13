@@ -4,6 +4,7 @@ export const theme = {
     breakpoints: ['40em', '52em', '64em'],
     space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
     size: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+    radii: [0, 4, 8, 12, 16, 20],
     fonts: {
         body:
             'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
@@ -26,19 +27,15 @@ export const theme = {
         primary: '#07c',
         secondary: '#30c',
         muted: '#f6f6f6',
-        custom: "#ddd"
-
+        custom: "#ddd",
+        offwhite: "#ffffff77"
     },
     shadows: {
         mdepth: "5px 5px 10px rgba(0, 0, 0, 0.25)",
         leftldepth: "-2px 2px 4px rgba(0, 0, 0, 0.25)"
     },
     borders: {
-        thin: {
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: "blue"
-        }
+        thin: "1px solid background"
     },
     text: {
         heading: {

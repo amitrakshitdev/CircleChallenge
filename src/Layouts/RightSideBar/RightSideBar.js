@@ -9,7 +9,7 @@ function Rightsidebar() {
         width: "250px",
         backgroundColor: "background",
         right: 0,
-        zIndex: "-1",
+        zIndex: "0",
         boxShadow: "leftldepth"
     }}>
 

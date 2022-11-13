@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    tool: "move"
+    tool: "movetool"
 }
 
 const selectedToolSlice = createSlice({
@@ -9,7 +9,7 @@ const selectedToolSlice = createSlice({
     initialState,
     reducers: {
         changeTool: (state, action) => {
-            state.tool = action.type
+            state.tool = action.payload
         }
     }
 });
