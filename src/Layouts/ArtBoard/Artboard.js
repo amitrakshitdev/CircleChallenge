@@ -3,18 +3,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { Box } from "theme-ui";
 import Layer from "../../Components/Layer/Layer";
 import { add } from "../../Services/features/layerSlice";
+const hmac = require("crypto-js").HmacSHA256;
+const { v4: uuid } = require("uuid");
 function Artboard(props) {
     const dispatch = useDispatch();
-    const layers = useSelector((state) => state.layers);
+    const layersIds = useSelector((state) => state.layers.layersIds);
+    const layerDetails = useSelector((state)=> state.layers.details);
     const tooltype = useSelector((state) => state.selectedTool.tool);
+    const mouseDown = useSelector((state)=>state.mouse.mouseDown);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x: 0, y: 0, x1: 0, y1: 0, x2: 0, y2: 0 });
     let svgProps = {};
     let [layersArr, setLayersArr] = useState([]);
-    let [mouseDown, setMouseDown] = useState(false);
+    // let [mouseDown, setMouseDown] = useState(false);
     let [svgElem, setSvgElem] = useState(null);
     useEffect(() => {
         switch (tooltype) {
-            case "circletool": {
+            case "ellipsetool": {
                 let { x1, y1, x: x2, y: y2 } = mouseCoordinate;
                 let cx = x1 + (x2 - x1) / 2;
                 let cy = y1 + (y2 - y1) / 2;
@@ -29,10 +33,13 @@ function Artboard(props) {
             setSvgElem(null);
         }
     }, [svgElem]);
+    useEffect(()=>{
+
+    }, [layerDetails])
     function mouseMove(ev) {
         if (mouseDown) {
             switch (tooltype) {
-                case "circletool": {
+                case "ellipsetool": {
                     let { offsetX: x, offsetY: y } = ev.nativeEvent;
                     setMouseCoordinate({
                         ...mouseCoordinate,
@@ -50,25 +57,32 @@ function Artboard(props) {
         setMouseCoordinate({
             x1, y1, x: x1, y: y1, x2: x1, y2: y1
         });
-        setMouseDown(true);
+        // setMouseDown(true);
     }
     function mouseupHandler(ev) {
-        setMouseDown(false);
+        // setMouseDown(false);
         let { offsetX: x2, offsetY: y2 } = ev.nativeEvent;
         setMouseCoordinate({
             ...mouseCoordinate,
             x2, y2
         });
-        let tempSvgProps = {
-            svgType: "ellipse",
-            x1: mouseCoordinate.x1,
-            y1: mouseCoordinate.y1,
-            x2: mouseCoordinate.x2,
-            y2: mouseCoordinate.y2,
-            fill: "#dddddd",
-            stroke: "#000"
-        };
-        dispatch(add(tempSvgProps));
+        switch (tooltype) {
+            case "ellipsetool": {
+                let layerId = hmac(uuid(), "layerId").toString().slice(0, 16);
+                let tempSvgProps = {
+                    layerId,
+                    svgType: "ellipse",
+                    x1: mouseCoordinate.x1,
+                    y1: mouseCoordinate.y1,
+                    x2: mouseCoordinate.x2,
+                    y2: mouseCoordinate.y2,
+                    fill: "#dddddd",
+                    stroke: "#000"
+                };
+                dispatch(add(tempSvgProps));
+            }
+        }
+
         setSvgElem(null);
     }
     return (<Box sx={{
@@ -81,8 +95,8 @@ function Artboard(props) {
         onMouseMove={mouseMove}
         onMouseUp={mouseupHandler}>
         <svg xmlns="http://www.w3.org/2000/svg" width={"100%"} height={"100%"}>
-            {layers.map((item, index) =>
-                <Layer key={index} svgProps={item} />
+            {layersIds.map((item, index) =>
+                <Layer key={item} svgProps={layerDetails[item]} />
             )}
             {svgElem}
         </svg>

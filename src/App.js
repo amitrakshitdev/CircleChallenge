@@ -6,8 +6,19 @@ import { jsx } from "theme-ui";
 import Toolbar from "./Layouts/Toolbar/Toolbar";
 import Artboard from "./Layouts/ArtBoard/Artboard";
 import Rightsidebar from "./Layouts/RightSideBar/RightSideBar";
+import { down, up } from "./Services/features/mouseSlice";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 export const App = () => {
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    window.addEventListener("mousedown", ()=>{
+      dispatch(down());
+    });
+    window.addEventListener("mouseup", ()=>{
+      dispatch(up());
+    })
+  }, [])
   return (
     <Box sx={{
       position: "relative",
