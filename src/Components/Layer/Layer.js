@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
+
+// Component
+import Selected from "../Selected/Selected";
+
+// Redux
 import { add, update } from "../../Services/features/layerSlice";
+import { select } from "../../Services/store";
 function Layer(props) {
     const dispatch = useDispatch();
     let [svgElem, setSvgElem] = useState(null);
@@ -9,10 +15,10 @@ function Layer(props) {
     const tooltype = useSelector((state) => state.selectedTool.tool);
     const layersIds = useSelector((state) => state.layers.layersIds);
     const layerDetails = useSelector((state) => state.layers.details);
+    const selectedLayer = useSelector(state => state.selectLayer);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x1: 0, y1: 0, x: 0, y: 0 });
     let [oldSvgProps, setOldSvgProps] = useState({});
-    let [tempSvgProps, setTempSvgProps] = useState(props.svgProps);
-
+    let [selectPreview, setSelectPreview] = useState(null);
     const remountLayer = (svgProps) => {
         if (svgProps.svgType) {
             switch (svgProps.svgType) {
@@ -26,20 +32,16 @@ function Layer(props) {
                     let cy = y1 + (y2 - y1) / 2;
                     let rx = Math.abs(x2 - x1) / 2;
                     let ry = Math.abs(y2 - y1) / 2;
-                    setSvgElem(<ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} />)
+                    setSvgElem(<ellipse cx={cx} cy={cy}
+                        rx={rx} ry={ry}
+                        fill={fill} />)
                 }
             }
         }
     }
-    useEffect(() => {
+    useEffect(() => { // First time mounting the layer
         remountLayer(props.svgProps);
     }, []);
-    // useEffect(() => {
-    //     remountLayer(layerDetails[props.svgProps.layerId]);
-    // }, [layerDetails]);
-    // useEffect(() => {
-    //     remountLayer(tempSvgProps);
-    // }, [tempSvgProps]);
     useEffect(() => {
         const { x1, y1, x: x2, y: y2 } = mouseCoordinate;
         if (mouseDown) {
@@ -60,11 +62,17 @@ function Layer(props) {
                         y2: newy2
                     }
                     dispatch(update(newSvgProps));
-                    remountLayer(layerDetails[props.svgProps.layerId]);
+                    // remountLayer(layerDetails[props.svgProps.layerId]);
+                    remountLayer(newSvgProps);
                 }
             }
         }
-    }, [mouseDown, mouseCoordinate]);
+    }, [mouseCoordinate,
+        oldSvgProps
+    ]);
+    useEffect(() => {
+
+    }, [selectedLayer, tooltype]);
     const mouseDownHandler = useCallback((ev) => {
         let { offsetX: x1, offsetY: y1 } = ev.nativeEvent;
         switch (tooltype) {
@@ -74,6 +82,18 @@ function Layer(props) {
                     x1, y1
                 });
                 setOldSvgProps(layerDetails[props.svgProps.layerId]);
+            }
+            case "selecttool": {
+                // dispatch(select(props.svgProps.layerId));
+                setMouseCoordinate({
+                    ...mouseCoordinate,
+                    x1, y1
+                });
+                setOldSvgProps(layerDetails[props.svgProps.layerId]);
+                // if (selectedLayer.id !== props.svgProps.layerId) {
+                //     console.log(selectedLayer.id, props.svgProps.layerId);
+                //     // ev.stopPropagation();
+                // }
             }
         }
     });
@@ -86,23 +106,45 @@ function Layer(props) {
                     x, y
                 });
             }
+            case "selecttool": {
+                setMouseCoordinate({
+                    ...mouseCoordinate,
+                    x, y
+                });
+            }
         }
     });
     const mouseUpHandler = useCallback((ev) => {
-        // setMouseDown(false);
         let { offsetX, offsetY } = ev.nativeEvent;
         switch (tooltype) {
             case "movetool": {
                 setMouseCoordinate({
                     ...mouseCoordinate,
-                    // x: offsetX, y: offsetY
+                    x: offsetX, y: offsetY
+                });
+            }
+            case "selecttool": {
+                setMouseCoordinate({
+                    ...mouseCoordinate,
+                    x: offsetX, y: offsetY
                 });
             }
         }
     });
     return (<React.Fragment>
-        <svg xmlns="http://www.w3.org/2000/svg" onMouseDown={mouseDownHandler} onMouseMove={mouseMoveHandler} onMouseUp={mouseUpHandler}>
-            {svgElem}
+        <svg xmlns="http://www.w3.org/2000/svg" onMouseDown={mouseDownHandler}
+            onMouseMove={mouseMoveHandler}
+            onMouseUp={mouseUpHandler} stroke={"#0055ff"}>
+            {selectedLayer.id === props.svgProps.layerId ?
+                <Selected x={props.svgProps.x1 - 1} y={props.svgProps.y1 - 1}
+                    // y1={props.svgProps.y1 - 1} y2={props.svgProps.y2 + 1}
+                    width={Math.abs(props.svgProps.x2 - props.svgProps.x1) + 2}
+                    height={Math.abs(props.svgProps.y2 - props.svgProps.y1) + 2}
+                    fill={"#0000ff00"} stroke={"f00"} strokeWidth={1}>
+                    {svgElem}
+                </Selected>
+                : svgElem}
+            {/* {svgElem} */}
         </svg>
     </React.Fragment>);
 }

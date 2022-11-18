@@ -1,10 +1,12 @@
 import React from "react";
 import { Box, Flex } from "theme-ui";
 import Toolbutton from "../../Components/ToolButton/Toolbutton";
+import Sbutton from "../../Components/SButton/Sbutton";
+
 import movetoolIcon from "../../Assets/icons/moveTool.png";
 import ellipseToolIcon from "../../Assets/icons/ellipseTool.png";
 import undoToolIcon from "../../Assets/icons/undoButton.png";
-import Sbutton from "../../Components/SButton/Sbutton";
+import selectToolIcon from "../../Assets/icons/selectTool.png";
 
 function Toolbar(props) {
   return <Flex sx={{
@@ -25,6 +27,7 @@ function Toolbar(props) {
       mx: "40px",
       justifyContent: "center"
     }} className={"tool-buttons-container"}>
+      <Toolbutton src={selectToolIcon} tool={"selecttool"} />
       <Toolbutton src={movetoolIcon} tool={"movetool"} />
       <Toolbutton src={ellipseToolIcon} tool={"ellipsetool"} />
     </Flex>

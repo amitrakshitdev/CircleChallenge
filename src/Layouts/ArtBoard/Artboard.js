@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box } from "theme-ui";
-import Layer from "../../Components/Layer/Layer";
-import { add } from "../../Services/features/layerSlice";
 const hmac = require("crypto-js").HmacSHA256;
 const { v4: uuid } = require("uuid");
+
+// components
+import Layer from "../../Components/Layer/Layer";
+
+// redux actions
+import { add } from "../../Services/features/layerSlice";
+import { select } from "../../Services/store";
 function Artboard(props) {
     const dispatch = useDispatch();
     const layersIds = useSelector((state) => state.layers.layersIds);
-    const layerDetails = useSelector((state)=> state.layers.details);
+    const layerDetails = useSelector((state) => state.layers.details);
     const tooltype = useSelector((state) => state.selectedTool.tool);
-    const mouseDown = useSelector((state)=>state.mouse.mouseDown);
+    const mouseDown = useSelector((state) => state.mouse.mouseDown);
+    const selectedLayer = useSelector(state => state.selectLayer);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x: 0, y: 0, x1: 0, y1: 0, x2: 0, y2: 0 });
     let svgProps = {};
     let [layersArr, setLayersArr] = useState([]);
@@ -24,18 +30,23 @@ function Artboard(props) {
                 let cy = y1 + (y2 - y1) / 2;
                 let rx = Math.abs(x2 - x1) / 2;
                 let ry = Math.abs(y2 - y1) / 2;
-                setSvgElem(<ellipse cx={`${cx}`} cy={`${cy}`} rx={`${rx}`} ry={`${ry}`} stroke={"blue"} strokeWidth={"2"} fillOpacity={"0.2"} fill={"#dddddd44"} />)
+                setSvgElem(<ellipse cx={`${cx}`} cy={`${cy}`}
+                    rx={`${rx}`} ry={`${ry}`}
+                    stroke={"blue"} strokeWidth={"2"}
+                    fillOpacity={"0.2"} fill={"#dddddd44"} />)
             }
         }
-    }, [mouseCoordinate, mouseDown]);
+    }, [mouseCoordinate,
+        // mouseDown
+    ]);
     useEffect(() => {
         if (!mouseDown) {
             setSvgElem(null);
         }
     }, [svgElem]);
-    useEffect(()=>{
-
-    }, [layerDetails])
+    useEffect(() => {
+        console.log("Layer details updated.");
+    }, [layerDetails]);
     function mouseMove(ev) {
         if (mouseDown) {
             switch (tooltype) {
@@ -58,6 +69,17 @@ function Artboard(props) {
             x1, y1, x: x1, y: y1, x2: x1, y2: y1
         });
         // setMouseDown(true);
+        switch (tooltype) {
+            case "selecttool": {
+                dispatch(select(null));
+                console.log("Clicked on artboard.")
+            }
+
+                break;
+
+            default:
+                break;
+        }
     }
     function mouseupHandler(ev) {
         // setMouseDown(false);

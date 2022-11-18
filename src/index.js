@@ -11,10 +11,11 @@ import { Provider } from "react-redux";
 const rootDOM = document.getElementById("root");
 const root = createRoot(rootDOM);
 root.render(
-    <React.StrictMode>
-        <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <App />
-            </ThemeProvider>
-        </Provider>
-    </React.StrictMode>);
+    // <React.StrictMode>
+    <Provider store={store}>
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
+    </Provider>
+    //</React.StrictMode>
+);

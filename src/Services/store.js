@@ -4,11 +4,14 @@ import selectedToolSlice from './features/selectedToolSlice';
 import layerSlice from './features/layerSlice';
 import mouseSlice from './features/mouseSlice';
 
-const select = createAction("select");
-const selectLayer = createReducer({ id: null }, {
-    select: (state, action) => {
-        state.id = action.payload
-    }
+const select = createAction("select/layer");
+const deselect = createAction("deselect/layer");
+const selectLayer = createReducer({ id: null }, (builder) => {
+    builder.addCase(select, (state, action) => {
+        state.id = action.payload;
+    }).addCase(deselect, (state) => {
+        state.id = null;
+    })
 },);
 
 const store = configureStore({
@@ -22,4 +25,4 @@ const store = configureStore({
 });
 
 export default store;
-export { select };
+export { select, deselect };
