@@ -28,7 +28,7 @@ function Toolbar(props) {
       justifyContent: "center"
     }} className={"tool-buttons-container"}>
       <Toolbutton src={selectToolIcon} tool={"selecttool"} />
-      <Toolbutton src={movetoolIcon} tool={"movetool"} />
+      {/* <Toolbutton src={movetoolIcon} tool={"movetool"} /> */}
       <Toolbutton src={ellipseToolIcon} tool={"ellipsetool"} />
     </Flex>
   </Flex>;

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 // Component
 import Selected from "../Selected/Selected";
+import Prev from "../Prev/Prev";
 
 // Redux
 import { add, update } from "../../Services/features/layerSlice";
@@ -10,12 +11,11 @@ import { select } from "../../Services/store";
 function Layer(props) {
     const dispatch = useDispatch();
     let [svgElem, setSvgElem] = useState(null);
-    // const [mouseDown, setMouseDown] = useState(false);
     const mouseDown = useSelector(state => state.mouse.mouseDown);
     const tooltype = useSelector((state) => state.selectedTool.tool);
     const layersIds = useSelector((state) => state.layers.layersIds);
     const layerDetails = useSelector((state) => state.layers.details);
-    const selectedLayer = useSelector(state => state.selectLayer);
+    const selectedLayerId = useSelector(state => state.selectLayer.id);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x1: 0, y1: 0, x: 0, y: 0 });
     let [oldSvgProps, setOldSvgProps] = useState({});
     let [selectPreview, setSelectPreview] = useState(null);
@@ -46,8 +46,7 @@ function Layer(props) {
         const { x1, y1, x: x2, y: y2 } = mouseCoordinate;
         if (mouseDown) {
             switch (tooltype) {
-                case "movetool": {
-                    // let { offsetX: x, offsetY: y } = ev.nativeEvent;
+                case "selecttool": {
                     let dx = x2 - x1;
                     let dy = y2 - y1;
                     let newx1 = oldSvgProps.x1 + dx;
@@ -62,27 +61,21 @@ function Layer(props) {
                         y2: newy2
                     }
                     dispatch(update(newSvgProps));
-                    // remountLayer(layerDetails[props.svgProps.layerId]);
                     remountLayer(newSvgProps);
+                    break;
                 }
             }
         }
+        console.log("use effect.");
     }, [mouseCoordinate,
         oldSvgProps
     ]);
     useEffect(() => {
 
-    }, [selectedLayer, tooltype]);
+    }, [selectedLayerId, tooltype]);
     const mouseDownHandler = useCallback((ev) => {
         let { offsetX: x1, offsetY: y1 } = ev.nativeEvent;
         switch (tooltype) {
-            case "movetool": {
-                setMouseCoordinate({
-                    ...mouseCoordinate,
-                    x1, y1
-                });
-                setOldSvgProps(layerDetails[props.svgProps.layerId]);
-            }
             case "selecttool": {
                 // dispatch(select(props.svgProps.layerId));
                 setMouseCoordinate({
@@ -90,9 +83,9 @@ function Layer(props) {
                     x1, y1
                 });
                 setOldSvgProps(layerDetails[props.svgProps.layerId]);
-                // if (selectedLayer.id !== props.svgProps.layerId) {
-                //     console.log(selectedLayer.id, props.svgProps.layerId);
-                //     // ev.stopPropagation();
+                // if (!selectLayer.id) {
+                //     console.log(selectedLayerId.id, props.svgProps.layerId);
+                //     ev.stopPropagation();
                 // }
             }
         }
@@ -100,12 +93,6 @@ function Layer(props) {
     const mouseMoveHandler = useCallback((ev) => {
         let { offsetX: x, offsetY: y } = ev.nativeEvent;
         switch (tooltype) {
-            case "movetool": {
-                setMouseCoordinate({
-                    ...mouseCoordinate,
-                    x, y
-                });
-            }
             case "selecttool": {
                 setMouseCoordinate({
                     ...mouseCoordinate,
@@ -117,12 +104,6 @@ function Layer(props) {
     const mouseUpHandler = useCallback((ev) => {
         let { offsetX, offsetY } = ev.nativeEvent;
         switch (tooltype) {
-            case "movetool": {
-                setMouseCoordinate({
-                    ...mouseCoordinate,
-                    x: offsetX, y: offsetY
-                });
-            }
             case "selecttool": {
                 setMouseCoordinate({
                     ...mouseCoordinate,
@@ -135,7 +116,7 @@ function Layer(props) {
         <svg xmlns="http://www.w3.org/2000/svg" onMouseDown={mouseDownHandler}
             onMouseMove={mouseMoveHandler}
             onMouseUp={mouseUpHandler} stroke={"#0055ff"}>
-            {selectedLayer.id === props.svgProps.layerId ?
+            {selectedLayerId === props.svgProps.layerId ?
                 <Selected x={props.svgProps.x1 - 1} y={props.svgProps.y1 - 1}
                     // y1={props.svgProps.y1 - 1} y2={props.svgProps.y2 + 1}
                     width={Math.abs(props.svgProps.x2 - props.svgProps.x1) + 2}

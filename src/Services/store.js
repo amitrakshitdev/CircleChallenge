@@ -3,6 +3,7 @@ import historyReducer from "./features/historySlice";
 import selectedToolSlice from './features/selectedToolSlice';
 import layerSlice from './features/layerSlice';
 import mouseSlice from './features/mouseSlice';
+import keyboardSlice from "./features/keyboardSlice";
 
 const select = createAction("select/layer");
 const deselect = createAction("deselect/layer");
@@ -20,7 +21,8 @@ const store = configureStore({
         selectedTool: selectedToolSlice,
         selectLayer: selectLayer,
         layers: layerSlice,
-        mouse: mouseSlice
+        mouse: mouseSlice,
+        keyboard: keyboardSlice
     }
 });
 

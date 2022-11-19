@@ -6,6 +6,7 @@ const { v4: uuid } = require("uuid");
 
 // components
 import Layer from "../../Components/Layer/Layer";
+import Prev from "../../Components/Prev/Prev";
 
 // redux actions
 import { add } from "../../Services/features/layerSlice";
@@ -17,8 +18,9 @@ function Artboard(props) {
     const tooltype = useSelector((state) => state.selectedTool.tool);
     const mouseDown = useSelector((state) => state.mouse.mouseDown);
     const selectedLayer = useSelector(state => state.selectLayer);
+    const keyboard = useSelector(state => state.keyboard);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x: 0, y: 0, x1: 0, y1: 0, x2: 0, y2: 0 });
-    let svgProps = {};
+    let [tempSvgProps, setTempSvgProps] = useState(null);
     let [layersArr, setLayersArr] = useState([]);
     // let [mouseDown, setMouseDown] = useState(false);
     let [svgElem, setSvgElem] = useState(null);
@@ -26,19 +28,20 @@ function Artboard(props) {
         switch (tooltype) {
             case "ellipsetool": {
                 let { x1, y1, x: x2, y: y2 } = mouseCoordinate;
-                let cx = x1 + (x2 - x1) / 2;
-                let cy = y1 + (y2 - y1) / 2;
-                let rx = Math.abs(x2 - x1) / 2;
-                let ry = Math.abs(y2 - y1) / 2;
-                setSvgElem(<ellipse cx={`${cx}`} cy={`${cy}`}
-                    rx={`${rx}`} ry={`${ry}`}
-                    stroke={"blue"} strokeWidth={"2"}
-                    fillOpacity={"0.2"} fill={"#dddddd44"} />)
+                let newSvgProps = {
+                    svgType: "ellipse",
+                    x1: mouseCoordinate.x1,
+                    y1: mouseCoordinate.y1,
+                    x2: mouseCoordinate.x2,
+                    y2: mouseCoordinate.y2,
+                    fill: "#dddddd",
+                    stroke: "#000000"
+                };
+                setTempSvgProps(newSvgProps);
+                setSvgElem(<Prev svgProps={newSvgProps} />);
             }
         }
-    }, [mouseCoordinate,
-        // mouseDown
-    ]);
+    }, [mouseCoordinate, mouseDown]);
     useEffect(() => {
         if (!mouseDown) {
             setSvgElem(null);
@@ -71,11 +74,9 @@ function Artboard(props) {
         // setMouseDown(true);
         switch (tooltype) {
             case "selecttool": {
-                dispatch(select(null));
-                console.log("Clicked on artboard.")
-            }
 
                 break;
+            }
 
             default:
                 break;
@@ -91,7 +92,7 @@ function Artboard(props) {
         switch (tooltype) {
             case "ellipsetool": {
                 let layerId = hmac(uuid(), "layerId").toString().slice(0, 16);
-                let tempSvgProps = {
+                let newSvgProps = {
                     layerId,
                     svgType: "ellipse",
                     x1: mouseCoordinate.x1,
@@ -99,9 +100,10 @@ function Artboard(props) {
                     x2: mouseCoordinate.x2,
                     y2: mouseCoordinate.y2,
                     fill: "#dddddd",
-                    stroke: "#000"
+                    stroke: "#000000"
                 };
-                dispatch(add(tempSvgProps));
+                setTempSvgProps(newSvgProps);
+                dispatch(add(newSvgProps));
             }
         }
 
