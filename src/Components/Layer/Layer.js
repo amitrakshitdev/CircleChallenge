@@ -16,6 +16,7 @@ function Layer(props) {
     const layersIds = useSelector((state) => state.layers.layersIds);
     const layerDetails = useSelector((state) => state.layers.details);
     const selectedLayerId = useSelector(state => state.selectLayer.id);
+    const keyboard = useSelector(state => state.keyboard);
     let [mouseCoordinate, setMouseCoordinate] = useState({ x1: 0, y1: 0, x: 0, y: 0 });
     let [oldSvgProps, setOldSvgProps] = useState({});
     let [selectPreview, setSelectPreview] = useState(null);
@@ -66,7 +67,7 @@ function Layer(props) {
                 }
             }
         }
-        console.log("use effect.");
+
     }, [mouseCoordinate,
         oldSvgProps
     ]);

@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 export const App = () => {
   const keyboard = useSelector(state => state.keyboard);
-  console.log(keyboard);
   const dispatch = useDispatch();
   let keypressed = {
     shift: false,

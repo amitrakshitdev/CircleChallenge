@@ -27,7 +27,6 @@ function Artboard(props) {
     useEffect(() => {
         switch (tooltype) {
             case "ellipsetool": {
-                let { x1, y1, x: x2, y: y2 } = mouseCoordinate;
                 let newSvgProps = {
                     svgType: "ellipse",
                     x1: mouseCoordinate.x1,
@@ -91,14 +90,24 @@ function Artboard(props) {
         });
         switch (tooltype) {
             case "ellipsetool": {
-                let layerId = hmac(uuid(), "layerId").toString().slice(0, 16);
+                let layerId = hmac(uuid(), "layerId").toString().slice(0, 16).toUpperCase();
+                let { x1, y1, x2, y2 } = mouseCoordinate;
+                let dx = Math.abs(x2 - x1);
+                let dy = Math.abs(y2 - y1);
+                if (keyboard.shift) {
+                    if (dx <= dy) {
+                        dx = dy;
+                    }
+                    else {
+                        dy = dx;
+                    }
+                    x2 = x1 < x2 ? x1 + dx : x1 - dx;
+                    y2 = y1 < y2 ? y1 + dy : y1 - dy;
+                }
                 let newSvgProps = {
                     layerId,
                     svgType: "ellipse",
-                    x1: mouseCoordinate.x1,
-                    y1: mouseCoordinate.y1,
-                    x2: mouseCoordinate.x2,
-                    y2: mouseCoordinate.y2,
+                    x1, y1, x2, y2,
                     fill: "#dddddd",
                     stroke: "#000000"
                 };
