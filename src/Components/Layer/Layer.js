@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-
+import { selectedComponent } from "./../Selected/Selected";
 // Component
 import Selected from "../Selected/Selected";
 import Prev from "../Prev/Prev";
@@ -21,11 +21,12 @@ function Layer(props) {
     let [oldSvgProps, setOldSvgProps] = useState({});
     let [selectPreview, setSelectPreview] = useState(null);
     const remountLayer = (svgProps) => {
-        if (svgProps.svgType) {
+        if (selectedLayerId === svgProps.layerId) {
             switch (svgProps.svgType) {
                 case "rect": {
                     let { x1, y1, x2, y2, fill } = svgProps;
-                    setSvgElem(<rect x1={x1} y1={y1} x2={x2} y2={y2} fill={fill} />)
+                    let SelectedComponent = selectedComponent(<rect x1={x1} y1={y1} x2={x2} y2={y2} fill={fill} />, svgProps);
+                    setSvgElem(<SelectedComponent />);
                 }
                 case "ellipse": {
                     let { x1, y1, x2, y2, fill } = svgProps;
@@ -33,9 +34,31 @@ function Layer(props) {
                     let cy = y1 + (y2 - y1) / 2;
                     let rx = Math.abs(x2 - x1) / 2;
                     let ry = Math.abs(y2 - y1) / 2;
-                    setSvgElem(<ellipse cx={cx} cy={cy}
+                    let SelectedComponent = selectedComponent(<ellipse cx={cx} cy={cy}
                         rx={rx} ry={ry}
-                        fill={fill} />)
+                        fill={fill} />, svgProps);
+                    setSvgElem(<SelectedComponent />);
+                }
+
+            }
+        }
+        else {
+            if (svgProps.svgType) {
+                switch (svgProps.svgType) {
+                    case "rect": {
+                        let { x1, y1, x2, y2, fill } = svgProps;
+                        setSvgElem(<rect x1={x1} y1={y1} x2={x2} y2={y2} fill={fill} />)
+                    }
+                    case "ellipse": {
+                        let { x1, y1, x2, y2, fill } = svgProps;
+                        let cx = x1 + (x2 - x1) / 2;
+                        let cy = y1 + (y2 - y1) / 2;
+                        let rx = Math.abs(x2 - x1) / 2;
+                        let ry = Math.abs(y2 - y1) / 2;
+                        setSvgElem(<ellipse cx={cx} cy={cy}
+                            rx={rx} ry={ry}
+                            fill={fill} />, svgProps);
+                    }
                 }
             }
         }
@@ -78,7 +101,7 @@ function Layer(props) {
         let { offsetX: x1, offsetY: y1 } = ev.nativeEvent;
         switch (tooltype) {
             case "selecttool": {
-                // dispatch(select(props.svgProps.layerId));
+                dispatch(select(props.svgProps.layerId));
                 setMouseCoordinate({
                     ...mouseCoordinate,
                     x1, y1
@@ -117,16 +140,7 @@ function Layer(props) {
         <svg xmlns="http://www.w3.org/2000/svg" onMouseDown={mouseDownHandler}
             onMouseMove={mouseMoveHandler}
             onMouseUp={mouseUpHandler} stroke={"#0055ff"}>
-            {selectedLayerId === props.svgProps.layerId ?
-                <Selected x={props.svgProps.x1 - 1} y={props.svgProps.y1 - 1}
-                    // y1={props.svgProps.y1 - 1} y2={props.svgProps.y2 + 1}
-                    width={Math.abs(props.svgProps.x2 - props.svgProps.x1) + 2}
-                    height={Math.abs(props.svgProps.y2 - props.svgProps.y1) + 2}
-                    fill={"#0000ff00"} stroke={"f00"} strokeWidth={1}>
-                    {svgElem}
-                </Selected>
-                : svgElem}
-            {/* {svgElem} */}
+            {svgElem}
         </svg>
     </React.Fragment>);
 }

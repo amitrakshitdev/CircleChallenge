@@ -36,7 +36,7 @@ function Artboard(props) {
                     fill: "#dddddd",
                     stroke: "#000000"
                 };
-                setTempSvgProps(newSvgProps);
+                // setTempSvgProps(newSvgProps);
                 setSvgElem(<Prev svgProps={newSvgProps} />);
             }
         }
@@ -111,7 +111,7 @@ function Artboard(props) {
                     fill: "#dddddd",
                     stroke: "#000000"
                 };
-                setTempSvgProps(newSvgProps);
+                // setTempSvgProps(newSvgProps);
                 dispatch(add(newSvgProps));
             }
         }
